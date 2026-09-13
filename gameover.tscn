@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://bm65cttmbxyog"]
 
+[ext_resource type="Script" uid="uid://cqi1v7n8wd1d1" path="res://gameover.gd" id="1_2nw6q"]
 [ext_resource type="Texture2D" uid="uid://c55khqul8la58" path="res://assets/blue.png" id="1_4nh4k"]
 [ext_resource type="Texture2D" uid="uid://c3yrggslelat0" path="res://assets/green.png" id="2_eeur3"]
 [ext_resource type="Texture2D" uid="uid://dhqqaelb0prnw" path="res://assets/white.png" id="3_kctv7"]
@@ -30,6 +31,7 @@ sources/1 = SubResource("TileSetAtlasSource_2nw6q")
 sources/2 = SubResource("TileSetAtlasSource_w3x71")
 
 [node name="Gameover" type="Node2D" unique_id=1101859033]
+script = ExtResource("1_2nw6q")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=780078465]
 position = Vector2(27, 14)
@@ -43,3 +45,20 @@ metadata/_edit_lock_ = true
 position = Vector2(631, 390)
 scale = Vector2(3.0490196, 2.6328125)
 texture = ExtResource("4_kctv7")
+
+[node name="Agayian" type="Button" parent="." unique_id=1304823367]
+offset_left = 68.0
+offset_top = 442.0
+offset_right = 392.0
+offset_bottom = 515.0
+text = "Play Agayian"
+
+[node name="Ragequit" type="Button" parent="." unique_id=8628657]
+offset_left = 831.0
+offset_top = 439.0
+offset_right = 1155.0
+offset_bottom = 512.0
+text = "Ragequit"
+
+[connection signal="pressed" from="Agayian" to="." method="_on_agayian_pressed"]
+[connection signal="pressed" from="Ragequit" to="." method="_on_ragequit_pressed"]

@@ -35,8 +35,8 @@ func _physics_process(delta: float) -> void:
 
 func _on_rigid_body_2d_body_entered(body: Node) -> void:
 	if body.is_in_group("Player"):
-		get_tree().change_scene_to_file("res://gameover.tscn")
+		get_tree().change_scene_to_file.call_deferred("res://gameover.tscn")
 
 func _on_void_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Player"):
-		get_tree().change_scene_to_file("res://gameover.tscn")
+		get_tree().change_scene_to_file.call_deferred("res://gameover.tscn")

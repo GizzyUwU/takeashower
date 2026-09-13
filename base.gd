@@ -2,7 +2,7 @@ extends Node2D
 
 @export var camera: Camera2D
 @export var tile_map: TileMapLayer
-@export var max_loops: int = 5
+@export var max_loops: int = 1
 
 var base_x: float
 var width: float

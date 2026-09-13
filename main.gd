@@ -81,7 +81,6 @@ func spawn_enemy(template: Node2D) -> void:
 
 		var collider: Object = result["collider"]
 		var hit_position: Vector2 = result["position"]
-		var hit_normal: Vector2 = result["normal"]
 
 		if collider != tile_map:
 			continue
