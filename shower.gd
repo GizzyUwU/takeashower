@@ -8,8 +8,15 @@ extends RigidBody2D
 @onready var player: Node2D = get_tree().get_first_node_in_group("Player")
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var ground_check: RayCast2D = $GroundCheck
+@onready var jump_check: RayCast2D = $JumpCheck
+@onready var block_check: RayCast2D = $BlockCheck
+@onready var block_check2: RayCast2D = $BlockCheck2
+@onready var block_check3: RayCast2D = $BlockCheck3
+const JUMP_VELOCITY: float = -900.0
 
 var grounded: bool = false
+var jumps: int = 0
 var stop_distance: float = 32.0
 var _pending_unload: bool = false
 
@@ -52,17 +59,20 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	grounded = false
 
 	for i in range(state.get_contact_count()):
-		var normal := state.get_contact_local_normal(i)
+		var normal: Vector2 = state.get_contact_local_normal(i)
 
 		if normal.dot(Vector2.UP) > 0.5:
 			grounded = true
 			break
 
+	if grounded:
+		jumps = 0
+
 	if player == null:
 		return
 
-	var to_player := player.global_position - global_position
-	var distance := to_player.length()
+	var to_player: Vector2 = player.global_position - global_position
+	var distance: float = to_player.length()
 
 	if distance > unload_range:
 		_pending_unload = true
@@ -74,20 +84,35 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	else:
 		state.linear_velocity.x = to_player.normalized().x * speed
 
-	if state.linear_velocity.y < 0:
-		state.linear_velocity.y = 0
+	var direction: float = signf(state.linear_velocity.x)
+
+	if grounded and direction != 0.0:
+
+		block_check.target_position.x = direction * 50.0
+		block_check.force_raycast_update()
+		
+		block_check2.target_position.x = direction * 50.0
+		block_check2.force_raycast_update()
+		
+		block_check3.target_position.x = direction * 50.0
+		block_check3.force_raycast_update()
+
+		if block_check.is_colliding() or block_check2.is_colliding() or block_check3.is_colliding():
+			state.linear_velocity.y = JUMP_VELOCITY
+			jumps += 1
 
 	if abs(to_player.x) > 0.01:
 		sprite.flip_h = to_player.x > 0
 
 
 func _unload() -> void:
-	var main := get_parent()
+	var main: Node = get_parent()
 
 	if main != null and main.has_method("spawn_enemy"):
 		main.spawn_enemy(self)
 
 	queue_free()
+
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Player"):
