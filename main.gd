@@ -6,38 +6,26 @@ extends Node2D
 @export var enemy_spacing: float = 50.0
 @export var ground_search_height: float = 2000.0
 @export var enemy_ground_offset: float = 28.0
-
+@export var tile_map: TileMapLayer
 @onready var player: Node2D = get_tree().get_first_node_in_group("Player")
-
-var tile_map: TileMapLayer
 
 
 func _ready() -> void:
-	var maps := get_tree().current_scene.find_children(
-		"*",
-		"TileMapLayer",
-		true,
-		false
-	)
-
-	if maps.is_empty():
-		return
-
-	tile_map = maps[0] as TileMapLayer
-
 	if tile_map == null:
 		return
 
+	call_deferred("_spawn_all")
+
+func _spawn_all():
 	var enemies := get_tree().get_nodes_in_group("Enemy")
 
 	if enemies.is_empty():
 		return
 
 	var template: Node2D = enemies[0]
-
 	for i in range(enemy_count - enemies.size()):
 		spawn_enemy(template)
-
+		await get_tree().process_frame
 
 func spawn_enemy(template: Node2D) -> void:
 	if player == null:
@@ -46,6 +34,8 @@ func spawn_enemy(template: Node2D) -> void:
 	if player == null:
 		print("ENEMY SPAWNER: No player found")
 		return
+		
+	var enemies: Array[Node] = get_tree().get_nodes_in_group("Enemy")
 
 	for attempt in range(100):
 		var direction: float = -1.0 if randf() < 0.5 else 1.0
@@ -102,7 +92,6 @@ func spawn_enemy(template: Node2D) -> void:
 
 		var valid := true
 
-		var enemies: Array[Node] = get_tree().get_nodes_in_group("Enemy")
 
 		for other: Node in enemies:
 			if not is_instance_valid(other):
@@ -115,11 +104,6 @@ func spawn_enemy(template: Node2D) -> void:
 
 			var enemy_distance: float = spawn_position.distance_to(
 				other_2d.global_position
-			)
-
-			print(
-				other_2d.global_position,
-				enemy_distance
 			)
 
 			if enemy_distance < enemy_spacing:
